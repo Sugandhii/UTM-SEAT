@@ -2,17 +2,18 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
-console.log('DB HOST: ', process.env.DB_HOST);
-console.log('DB USER: ', process.env.DB_USER);
-console.log('DB NAME:', process.env.DB_NAME);
-console.log('DB PASSWORD EXISTS:', !!process.env.DB_PASSWORD);
 
 const db = require('./config/db');
+const cafeteriaRoutes = require('./routes/cafeteriaRoutes');
 
 const app = express();
 
+app.set('json spaces', 2);
+
 app.use(cors());
 app.use(express.json());
+
+app.use('/api/cafeterias', cafeteriaRoutes);
 
 // untuk test backend
 app.get('/', (req, res) => {

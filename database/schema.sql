@@ -22,14 +22,24 @@ CREATE TABLE IF NOT EXISTS cafeterias (
     cafeteria_id INT AUTO_INCREMENT PRIMARY KEY,
     cafeteria_name VARCHAR(100) NOT NULL,
     description TEXT,
+
+    operating_status ENUM(
+        'open',
+        'closed',
+        'temporarily_closed',
+        'unknown'
+    ) NOT NULL DEFAULT 'unknown',
+
     latitude DECIMAL(10, 7) DEFAULT NULL,
     longitude DECIMAL(10, 7) DEFAULT NULL,
     geofence_radius INT DEFAULT 100,
     is_active BOOLEAN DEFAULT TRUE,
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
+
 
 -- TABLE 3: SEATS
 
