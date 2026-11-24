@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cafeteria Management | UTM SEAT</title>
+  <link rel="stylesheet" href="css/admin-dashboard.css">
+  <link rel="stylesheet" href="css/cafeteria-management.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <h2 class="logo">UTM SEAT</h2>
+    <nav>
+      <a href="admin-dashboard.html">Dashboard</a>
+      <a href="cafeteria-management.html" class="active">Cafeterias</a>
+      <a href="#">Bookings</a>
+      <a href="#">Reports</a>
+      <a href="index.html">Logout</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <header class="topbar">
+      <h1>Cafeteria & Seat Management</h1>
+      <button class="btn-primary" id="addCafeBtn">+ Add Cafeteria</button>
+    </header>
+
+    <section class="panel">
+      <h3>Cafeterias</h3>
+      <div class="cafe-grid" id="cafeList"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h3>Seat Inventory</h3>
+        <select id="cafeSelect"></select>
+      </div>
+
+      <div class="seat-summary" id="seatSummary"></div>
+
+      <div class="legend">
+        <span><i class="dot available"></i> Available</span>
+        <span><i class="dot occupied"></i> Occupied</span>
+        <span><i class="dot maintenance"></i> Under maintenance</span>
+      </div>
+      <p class="hint">Click an available seat to mark it as under maintenance, and click again to restore it.</p>
+
+      <div class="seat-grid" id="seatGrid"></div>
+    </section>
+  </main>
+
+  <!-- Add / Edit popup -->
+  <div class="modal" id="modal">
+    <div class="modal-box">
+      <h3 id="modalTitle">Add Cafeteria</h3>
+      <form id="cafeForm">
+        <label>Cafeteria name
+          <input type="text" id="fName" required>
+        </label>
+        <label>Location
+          <input type="text" id="fLocation" required>
+        </label>
+        <label>Total seats
+          <input type="number" id="fSeats" min="1" max="200" required>
+        </label>
+        <label>Opening hours
+          <input type="text" id="fHours" placeholder="e.g. 7:00 AM - 10:00 PM" required>
+        </label>
+        <label>Status
+          <select id="fStatus">
+            <option value="Open">Open</option>
+            <option value="Closed">Closed</option>
+          </select>
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" id="cancelModal">Cancel</button>
+          <button type="submit" class="btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/cafeteria-management.js"></script>
+</body>
+</html>
