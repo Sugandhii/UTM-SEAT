@@ -1,0 +1,222 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UTM SE&AT | User Management</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="app-container">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h2>UTM SE&AT</h2>
+                <p>Smart Eating & Availability Tracker</p>
+            </div>
+
+            <nav>
+                <a href="#" class="nav-link active" onclick="showSection('register')">
+                    <span>＋</span> Create Account
+                </a>
+                <a href="#" class="nav-link" onclick="showSection('login')">
+                    <span>↪</span> Login
+                </a>
+                <a href="#" class="nav-link" onclick="showSection('profile')">
+                    <span>♙</span> My Profile
+                </a>
+                <a href="#" class="nav-link" onclick="showSection('admin')">
+                    <span>▤</span> User Management
+                </a>
+                <a href="#" class="nav-link" id="logoutButton">
+                    <span>⇥</span> Logout
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <p>UTM Student Portal</p>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+
+            <header class="topbar">
+                <div>
+                    <h1>User Management</h1>
+                    <p>Manage your account and access the SE&AT platform.</p>
+                </div>
+                <div class="welcome-text">Welcome to UTM SE&AT</div>
+            </header>
+
+            <!-- DASHBOARD SUMMARY -->
+            <section class="summary-grid">
+                <div class="summary-card">
+                    <p>Platform</p>
+                    <h2>UTM SE&AT</h2>
+                    <span>Smart campus solution</span>
+                </div>
+
+                <div class="summary-card">
+                    <p>Account Access</p>
+                    <h2>Secure</h2>
+                    <span>Authentication system</span>
+                </div>
+
+                <div class="summary-card">
+                    <p>User Role</p>
+                    <h2>Student / Admin</h2>
+                    <span>Role-based access</span>
+                </div>
+            </section>
+
+            <!-- REGISTER -->
+            <section class="content-card" id="registerSection">
+                <div class="card-heading">
+                    <div>
+                        <h2>Create Account</h2>
+                        <p>Register your UTM student account to get started.</p>
+                    </div>
+                    <div class="card-icon">＋</div>
+                </div>
+
+                <form id="registerForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="studentId">Student ID</label>
+                            <input type="text" id="studentId"
+                                placeholder="e.g. A24CS4052" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="registerName">Full Name</label>
+                            <input type="text" id="registerName"
+                                placeholder="Enter your full name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="registerEmail">Email Address</label>
+                            <input type="email" id="registerEmail"
+                                placeholder="Enter your email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="registerPassword">Password</label>
+                            <input type="password" id="registerPassword"
+                                placeholder="Minimum 8 characters" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="primary-button">
+                        Create Account
+                    </button>
+                </form>
+
+                <p class="switch-text">
+                    Already have an account?
+                    <a href="#" onclick="showSection('login')">Login here</a>
+                </p>
+            </section>
+
+            <!-- LOGIN -->
+            <section class="content-card" id="loginSection" hidden>
+                <div class="card-heading">
+                    <div>
+                        <h2>Welcome Back</h2>
+                        <p>Login to access your UTM SE&AT account.</p>
+                    </div>
+                    <div class="card-icon">↪</div>
+                </div>
+
+                <form id="loginForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="loginEmail">Email Address</label>
+                            <input type="email" id="loginEmail"
+                                placeholder="Enter your email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="loginPassword">Password</label>
+                            <input type="password" id="loginPassword"
+                                placeholder="Enter your password" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="primary-button">Login</button>
+                </form>
+
+                <p class="switch-text">
+                    Don't have an account?
+                    <a href="#" onclick="showSection('register')">Register here</a>
+                </p>
+            </section>
+
+            <!-- PROFILE -->
+            <section class="content-card" id="profileSection" hidden>
+                <div class="card-heading">
+                    <div>
+                        <h2>My Profile</h2>
+                        <p>View and update your account information.</p>
+                    </div>
+                    <div class="card-icon">♙</div>
+                </div>
+
+                <div class="profile-details">
+                    <div class="detail-item">
+                        <span>Student ID</span>
+                        <strong id="profileStudentId">-</strong>
+                    </div>
+                    <div class="detail-item">
+                        <span>Email Address</span>
+                        <strong id="profileEmail">-</strong>
+                    </div>
+                    <div class="detail-item">
+                        <span>Account Role</span>
+                        <strong id="profileRole">-</strong>
+                    </div>
+                </div>
+
+                <form id="profileForm">
+                    <div class="form-group">
+                        <label for="profileName">Full Name</label>
+                        <input type="text" id="profileName"
+                            placeholder="Enter your full name">
+                    </div>
+
+                    <button type="submit" class="primary-button">
+                        Update Profile
+                    </button>
+                </form>
+            </section>
+
+            <!-- ADMIN -->
+            <section class="content-card" id="adminSection" hidden>
+                <div class="card-heading">
+                    <div>
+                        <h2>User Management</h2>
+                        <p>View registered users in the system.</p>
+                    </div>
+                    <div class="card-icon">▤</div>
+                </div>
+
+                <div id="userList">
+                    <p class="empty-message">User information will appear here.</p>
+                </div>
+            </section>
+
+            <footer class="page-footer">
+                <p>© 2026 UTM SE&AT | Smart Eating & Availability Tracker</p>
+            </footer>
+
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/script.js"></script>
+
+</body>
+</html>
