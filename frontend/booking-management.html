@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking History | UTM SEAT</title>
+  <link rel="stylesheet" href="css/admin-dashboard.css">
+  <link rel="stylesheet" href="css/cafeteria-management.css">
+  <link rel="stylesheet" href="css/reports.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <h2 class="logo">UTM SEAT</h2>
+    <nav>
+      <a href="admin-dashboard.html">Dashboard</a>
+      <a href="cafeteria-management.html">Cafeterias</a>
+      <a href="booking-management.html" class="active">Bookings</a>
+      <a href="reports.html">Reports</a>
+      <a href="index.html">Logout</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <header class="topbar">
+      <h1>Booking History</h1>
+      <button class="btn-primary" id="exportBtn">Export CSV</button>
+    </header>
+
+    <section class="stats">
+      <div class="card"><p>Total Bookings</p><h2 id="sTotal">0</h2></div>
+      <div class="card"><p>Completed</p><h2 id="sCompleted">0</h2></div>
+      <div class="card"><p>Active</p><h2 id="sActive">0</h2></div>
+      <div class="card"><p>Cancelled</p><h2 id="sCancelled">0</h2></div>
+    </section>
+
+    <section class="panel">
+      <h3>Filters</h3>
+      <div class="filter-row">
+        <label>Search
+          <input type="text" id="searchInput" placeholder="Student or matric no...">
+        </label>
+        <label>From
+          <input type="date" id="dateFrom">
+        </label>
+        <label>To
+          <input type="date" id="dateTo">
+        </label>
+        <label>Cafeteria
+          <select id="cafeFilter"></select>
+        </label>
+        <label>Status
+          <select id="statusFilter">
+            <option value="all">All status</option>
+            <option value="Active">Active</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </label>
+        <button class="btn-secondary" id="resetBtn">Reset</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <table>
+        <thead>
+          <tr>
+            <th>Booking ID</th>
+            <th>Date</th>
+            <th>Student</th>
+            <th>Cafeteria</th>
+            <th>Seat</th>
+            <th>Time</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="historyTable"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="js/reports.js"></script>
+</body>
+</html>

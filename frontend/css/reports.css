@@ -1,0 +1,18 @@
+.filter-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; align-items: end; }
+.filter-row label { font-size: 13px; color: #555; }
+.filter-row input, .filter-row select { display: block; width: 100%; margin-top: 4px; padding: 9px 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; }
+
+.period-select { padding: 9px 14px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; }
+.small-text { font-size: 20px !important; }
+
+.hour-chart { display: flex; align-items: flex-end; gap: 12px; height: 240px; padding-top: 10px; border-bottom: 1px solid #ddd; }
+.hour-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+.hour-bar { width: 100%; max-width: 48px; background: #7b1e3a; border-radius: 6px 6px 0 0; transition: height 0.3s; }
+.hour-bar.peak { background: #d9363e; }
+.hour-value { font-size: 12px; margin-bottom: 4px; color: #444; }
+.hour-labels { display: flex; gap: 12px; margin-top: 6px; }
+.hour-labels span { flex: 1; text-align: center; font-size: 12px; color: #666; }
+
+@media (max-width: 800px) {
+  .hour-chart, .hour-labels { gap: 4px; }
+}

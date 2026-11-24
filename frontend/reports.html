@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Occupancy Reports | UTM SEAT</title>
+  <link rel="stylesheet" href="css/admin-dashboard.css">
+  <link rel="stylesheet" href="css/cafeteria-management.css">
+  <link rel="stylesheet" href="css/reports.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <h2 class="logo">UTM SEAT</h2>
+    <nav>
+      <a href="admin-dashboard.html">Dashboard</a>
+      <a href="cafeteria-management.html">Cafeterias</a>
+      <a href="booking-management.html">Bookings</a>
+      <a href="reports.html" class="active">Reports</a>
+      <a href="index.html">Logout</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <header class="topbar">
+      <h1>Occupancy Reports</h1>
+      <select id="periodSelect" class="period-select">
+        <option value="today">Today</option>
+        <option value="week">This week</option>
+        <option value="month">This month</option>
+      </select>
+    </header>
+
+    <section class="stats">
+      <div class="card"><p>Total Bookings</p><h2 id="rBookings">0</h2></div>
+      <div class="card"><p>Average Occupancy</p><h2 id="rAverage">0%</h2></div>
+      <div class="card"><p>Peak Hour</p><h2 id="rPeak">-</h2></div>
+      <div class="card"><p>Busiest Cafeteria</p><h2 id="rBusiest" class="small-text">-</h2></div>
+    </section>
+
+    <section class="panel">
+      <h3>Occupancy by Cafeteria</h3>
+      <div id="cafeOccupancy"></div>
+    </section>
+
+    <section class="panel">
+      <h3>Bookings by Hour (Peak Hours)</h3>
+      <div class="hour-chart" id="hourChart"></div>
+    </section>
+  </main>
+
+  <script src="js/reports.js"></script>
+</body>
+</html>
