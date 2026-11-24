@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | UTM SEAT</title>
+  <link rel="stylesheet" href="css/admin-dashboard.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <h2 class="logo">UTM SEAT</h2>
+    <nav>
+      <a href="admin-dashboard.html" class="active">Dashboard</a>
+      <a href="#">Cafeterias</a>
+      <a href="#">Bookings</a>
+      <a href="#">Reports</a>
+      <a href="index.html">Logout</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <header class="topbar">
+      <h1>Admin Dashboard</h1>
+      <span class="admin-name">Welcome, Admin</span>
+    </header>
+
+    <section class="stats">
+      <div class="card"><p>Total Seats</p><h2 id="statTotal">0</h2></div>
+      <div class="card"><p>Occupied</p><h2 id="statOccupied">0</h2></div>
+      <div class="card"><p>Available</p><h2 id="statAvailable">0</h2></div>
+      <div class="card"><p>Active Bookings</p><h2 id="statBookings">0</h2></div>
+    </section>
+
+    <section class="panel">
+      <h3>Cafeteria Occupancy</h3>
+      <div id="occupancyList"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h3>Booking Control</h3>
+        <div class="filters">
+          <input type="text" id="searchInput" placeholder="Search student or matric no...">
+          <select id="statusFilter">
+            <option value="all">All status</option>
+            <option value="Active">Active</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Booking ID</th>
+            <th>Student</th>
+            <th>Cafeteria</th>
+            <th>Seat</th>
+            <th>Time</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="bookingTable"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="js/admin-dashboard.js"></script>
+</body>
+</html>
