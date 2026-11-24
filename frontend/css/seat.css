@@ -1,0 +1,255 @@
+/* =====================================================
+   Seat Management page styles (seats.html)
+   Colours can be changed here in one place.
+   ===================================================== */
+
+:root {
+    --brand: #7a1236;          /* UTM-style maroon */
+    --brand-dark: #5c0d28;
+    --brand-soft: #f6e9ee;
+
+    --seat-available: #1f8a4c;
+    --seat-held: #d98a00;
+    --seat-occupied: #c0392b;
+    --seat-unavailable: #9aa0a6;
+    --seat-mine: #1d5fd1;
+
+    --page-bg: #f4f5f7;
+}
+
+body {
+    background: var(--page-bg);
+    min-height: 100vh;
+}
+
+/* Keeps the page phone-width on large screens (mobile-first) */
+.page-container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+/* ---------- Header ---------- */
+.app-header {
+    background: var(--brand);
+    color: #fff;
+    padding: 0.85rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+}
+
+.app-header-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.app-header-subtitle {
+    font-size: 0.75rem;
+    opacity: 0.8;
+}
+
+.test-user {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.test-user select {
+    width: auto;
+}
+
+/* ---------- Buttons ---------- */
+.btn-brand {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: #fff;
+}
+
+.btn-brand:hover,
+.btn-brand:focus,
+.btn-brand:active {
+    background: var(--brand-dark) !important;
+    border-color: var(--brand-dark) !important;
+    color: #fff !important;
+}
+
+/* ---------- Cards ---------- */
+.app-card {
+    border: none;
+    border-radius: 0.9rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* ---------- Location ---------- */
+.location-icon {
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.location-icon.state-unknown  { background: #eceef1; color: #5f6368; }
+.location-icon.state-checking { background: #eceef1; color: #5f6368; }
+.location-icon.state-inside   { background: #e3f4ea; color: var(--seat-available); }
+.location-icon.state-outside  { background: #fbe7e5; color: var(--seat-occupied); }
+.location-icon.state-dev      { background: #fff4dc; color: #9a6400; }
+
+/* ---------- Summary ---------- */
+.summary-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+}
+
+.summary-item {
+    background: #f8f9fa;
+    border-radius: 0.6rem;
+    padding: 0.5rem 0.25rem;
+    text-align: center;
+}
+
+.summary-number {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.summary-label {
+    font-size: 0.7rem;
+    color: #5f6368;
+}
+
+/* ---------- Seat grid ---------- */
+.seat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.6rem;
+}
+
+@media (min-width: 480px) {
+    .seat-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+}
+
+.seat {
+    aspect-ratio: 1 / 1;
+    border-radius: 0.7rem;
+    border: 2px solid transparent;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.1rem;
+    padding: 0;
+    transition: transform 0.1s ease;
+}
+
+.seat i {
+    font-size: 0.85rem;
+    opacity: 0.9;
+}
+
+.seat.status-available   { background: var(--seat-available); }
+.seat.status-held        { background: var(--seat-held); }
+.seat.status-occupied    { background: var(--seat-occupied); }
+.seat.status-unavailable { background: var(--seat-unavailable); text-decoration: line-through; }
+.seat.status-mine        { background: var(--seat-mine); border-color: #0b3a8c; }
+
+.seat.clickable {
+    cursor: pointer;
+}
+
+.seat.clickable:hover {
+    transform: scale(1.05);
+}
+
+.seat:disabled {
+    opacity: 1;            /* keep colours readable */
+    cursor: not-allowed;
+}
+
+.seat.status-available:disabled {
+    opacity: 0.55;         /* available but you cannot book yet */
+}
+
+.seat:focus-visible {
+    outline: 3px solid #000;
+    outline-offset: 2px;
+}
+
+/* ---------- Legend ---------- */
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+    font-size: 0.75rem;
+    color: #5f6368;
+}
+
+.legend-dot {
+    display: inline-block;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 0.2rem;
+    vertical-align: -1px;
+    margin-right: 0.2rem;
+}
+
+.legend-dot.status-available   { background: var(--seat-available); }
+.legend-dot.status-held        { background: var(--seat-held); }
+.legend-dot.status-occupied    { background: var(--seat-occupied); }
+.legend-dot.status-unavailable { background: var(--seat-unavailable); }
+.legend-dot.status-mine        { background: var(--seat-mine); }
+
+/* ---------- Booking bar (bottom) ---------- */
+.booking-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #fff;
+    border-top: 1px solid #e1e3e6;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+    padding: 0.85rem 0 calc(0.85rem + env(safe-area-inset-bottom));
+    z-index: 1030;
+}
+
+.booking-bar-spacer {
+    height: 9rem;
+}
+
+.booking-seat-badge {
+    min-width: 3.2rem;
+    height: 3.2rem;
+    border-radius: 0.7rem;
+    background: var(--seat-mine);
+    color: #fff;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.booking-seat-badge.is-held {
+    background: var(--seat-held);
+}
+
+.countdown {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+}
+
+.countdown.is-urgent {
+    color: var(--seat-occupied);
+}
