@@ -1,0 +1,1187 @@
+{
+  "info": {
+    "name": "UTM SE&AT - Seat Management (Sprint 1)",
+    "description": "TEST-02 Location Verification, TEST-03 Seating Availability and TEST-04 Booking Functionality.\n\nBefore running: start the backend, run database/schema.sql and database/seed.sql, and make sure test students 1 and 2 have no active booking. Run the whole collection in order with the Collection Runner. It cleans up after itself, so it can be run again.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "bookingId",
+      "value": ""
+    },
+    {
+      "key": "locationBookingId",
+      "value": ""
+    },
+    {
+      "key": "geofenceEnabled",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "TEST-02 Location Verification",
+      "item": [
+        {
+          "name": "TC-02-01 Student at cafeteria centre is inside",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/cafeterias/1/verify-location",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cafeterias",
+                "1",
+                "verify-location"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 1.5582,\n  \"longitude\": 103.639\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Inside the geofence', () => pm.expect(body.data.within_geofence).to.eql(true));",
+                  "pm.test('Distance is 0 m', () => pm.expect(body.data.distance_meters).to.eql(0));",
+                  "pm.test('Can book', () => pm.expect(body.data.can_book).to.eql(true));",
+                  "pm.collectionVariables.set('geofenceEnabled', String(body.data.geofence_enabled));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC-02-02 Student about 45 m away is inside",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/cafeterias/1/verify-location",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cafeterias",
+                "1",
+                "verify-location"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 1.5586,\n  \"longitude\": 103.639\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Inside the geofence', () => pm.expect(body.data.within_geofence).to.eql(true));",
+                  "pm.test('Distance is about 45 m', () => pm.expect(body.data.distance_meters).to.be.within(40, 50));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC-02-03 Student about 500 m away is outside",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/cafeterias/1/verify-location",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cafeterias",
+                "1",
+                "verify-location"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 1.5627,\n  \"longitude\": 103.639\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Outside the geofence', () => pm.expect(body.data.within_geofence).to.eql(false));",
+                  "pm.test('Distance is more than the radius', () => pm.expect(body.data.distance_meters).to.be.above(body.data.geofence_radius_meters));",
+                  "pm.test('can_book only when geofence is switched off', () => pm.expect(body.data.can_book).to.eql(!body.data.geofence_enabled));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC-02-04 Missing location is rejected",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/cafeterias/1/verify-location",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cafeterias",
+                "1",
+                "verify-location"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "const body = pm.response.json();",
+                  "pm.test('Error code LOCATION_REQUIRED', () => pm.expect(body.code).to.eql('LOCATION_REQUIRED'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC-02-05 Invalid latitude is rejected",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/cafeterias/1/verify-location",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cafeterias",
+                "1",
+                "verify-location"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 95,\n  \"longitude\": 103.639\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "const body = pm.response.json();",
+                  "pm.test('Error code INVALID_INPUT', () => pm.expect(body.code).to.eql('INVALID_INPUT'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC-02-06 Unknown cafeteria",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/cafeterias/9999/verify-location",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cafeterias",
+                "9999",
+                "verify-location"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 1.5582,\n  \"longitude\": 103.639\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "const body = pm.response.json();",
+                  "pm.test('Error code CAFETERIA_NOT_FOUND', () => pm.expect(body.code).to.eql('CAFETERIA_NOT_FOUND'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC-02-07 Booking from outside the cafeteria",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/hold",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "hold"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 2,\n  \"seat_id\": 7,\n  \"latitude\": 1.5627,\n  \"longitude\": 103.639\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "const geofenceOn = pm.collectionVariables.get('geofenceEnabled') === 'true';",
+                  "pm.test('Rejected when geofence is on, allowed when off', () => {",
+                  "  if (geofenceOn) { pm.response.to.have.status(403); pm.expect(body.code).to.eql('LOCATION_NOT_VERIFIED'); }",
+                  "  else { pm.response.to.have.status(201); }",
+                  "});",
+                  "if (pm.response.code === 201) {",
+                  "  pm.sendRequest({ url: pm.collectionVariables.get('baseUrl') + '/api/bookings/' + body.data.booking_id + '/cancel', method: 'POST',",
+                  "    header: { 'Content-Type': 'application/json' }, body: { mode: 'raw', raw: JSON.stringify({ user_id: 2 }) } });",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC-02-08 Booking without location",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/hold",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "hold"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 2,\n  \"seat_id\": 7\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "const geofenceOn = pm.collectionVariables.get('geofenceEnabled') === 'true';",
+                  "pm.test('Rejected when geofence is on, allowed when off', () => {",
+                  "  if (geofenceOn) { pm.response.to.have.status(400); pm.expect(body.code).to.eql('LOCATION_REQUIRED'); }",
+                  "  else { pm.response.to.have.status(201); }",
+                  "});",
+                  "if (pm.response.code === 201) {",
+                  "  pm.sendRequest({ url: pm.collectionVariables.get('baseUrl') + '/api/bookings/' + body.data.booking_id + '/cancel', method: 'POST',",
+                  "    header: { 'Content-Type': 'application/json' }, body: { mode: 'raw', raw: JSON.stringify({ user_id: 2 }) } });",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC-02-09 Booking from inside the cafeteria",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/hold",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "hold"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 2,\n  \"seat_id\": 7,\n  \"latitude\": 1.5582,\n  \"longitude\": 103.639\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "const geofenceOn = pm.collectionVariables.get('geofenceEnabled') === 'true';",
+                  "pm.test('location_verified matches the geofence setting', () => pm.expect(body.data.location_verified).to.eql(geofenceOn));",
+                  "pm.collectionVariables.set('locationBookingId', body.data.booking_id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC-02-10 Clean up: cancel that booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/{{locationBookingId}}/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "{{locationBookingId}}",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 2\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TEST-03 Seating Availability",
+      "item": [
+        {
+          "name": "TC-03-01 List seats of Arked Meranti",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cafeterias/1/seats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cafeterias",
+                "1",
+                "seats"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Summary total matches number of seats', () => pm.expect(body.summary.total).to.eql(body.data.length));",
+                  "pm.test('Summary counts add up', () => { const s = body.summary; pm.expect(s.available + s.held + s.occupied + s.unavailable).to.eql(s.total); });",
+                  "pm.test('Every seat has a valid status', () => body.data.forEach(seat => pm.expect(['available','held','occupied','unavailable']).to.include(seat.status)));",
+                  "pm.test('Seat 12 is unavailable', () => pm.expect(body.data.find(s => s.seat_id === 12).status).to.eql('unavailable'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC-03-02 Cafeteria that does not exist",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cafeterias/9999/seats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cafeterias",
+                "9999",
+                "seats"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "const body = pm.response.json();",
+                  "pm.test('Error code CAFETERIA_NOT_FOUND', () => pm.expect(body.code).to.eql('CAFETERIA_NOT_FOUND'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC-03-03 Invalid cafeteria id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cafeterias/abc/seats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cafeterias",
+                "abc",
+                "seats"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "const body = pm.response.json();",
+                  "pm.test('Error code INVALID_INPUT', () => pm.expect(body.code).to.eql('INVALID_INPUT'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TEST-04 Booking Functionality",
+      "item": [
+        {
+          "name": "TC-04-01 Hold an available seat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/hold",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "hold"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 1,\n  \"seat_id\": 2,\n  \"latitude\": 1.5582,\n  \"longitude\": 103.639\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "pm.test('Booking is held', () => pm.expect(body.data.booking_status).to.eql('held'));",
+                  "pm.test('Hold has a countdown', () => pm.expect(body.data.hold_seconds_left).to.be.above(0));",
+                  "pm.collectionVariables.set('bookingId', body.data.booking_id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC-04-02 Same student cannot hold a second seat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/hold",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "hold"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 1,\n  \"seat_id\": 3\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 409', () => pm.response.to.have.status(409));",
+                  "const body = pm.response.json();",
+                  "pm.test('Error code USER_HAS_ACTIVE_BOOKING', () => pm.expect(body.code).to.eql('USER_HAS_ACTIVE_BOOKING'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC-04-03 Another student cannot hold a held seat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/hold",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "hold"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 2,\n  \"seat_id\": 2\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 409', () => pm.response.to.have.status(409));",
+                  "const body = pm.response.json();",
+                  "pm.test('Error code SEAT_NOT_AVAILABLE', () => pm.expect(body.code).to.eql('SEAT_NOT_AVAILABLE'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC-04-04 Cannot hold an unavailable seat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/hold",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "hold"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 2,\n  \"seat_id\": 12\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 409', () => pm.response.to.have.status(409));",
+                  "const body = pm.response.json();",
+                  "pm.test('Error code SEAT_NOT_AVAILABLE', () => pm.expect(body.code).to.eql('SEAT_NOT_AVAILABLE'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC-04-05 Missing seat_id is rejected",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/hold",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "hold"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 2\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "const body = pm.response.json();",
+                  "pm.test('Error code INVALID_INPUT', () => pm.expect(body.code).to.eql('INVALID_INPUT'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC-04-06 Held seat shows as held",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cafeterias/1/seats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cafeterias",
+                "1",
+                "seats"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Seat 2 is held', () => pm.expect(body.data.find(s => s.seat_id === 2).status).to.eql('held'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC-04-07 Another student cannot confirm",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/{{bookingId}}/confirm",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "{{bookingId}}",
+                "confirm"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 2\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 403', () => pm.response.to.have.status(403));",
+                  "const body = pm.response.json();",
+                  "pm.test('Error code NOT_YOUR_BOOKING', () => pm.expect(body.code).to.eql('NOT_YOUR_BOOKING'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC-04-08 Owner confirms the seat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/{{bookingId}}/confirm",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "{{bookingId}}",
+                "confirm"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 1\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Booking is confirmed', () => pm.expect(body.data.booking_status).to.eql('confirmed'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC-04-09 Cannot confirm twice",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/{{bookingId}}/confirm",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "{{bookingId}}",
+                "confirm"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 1\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 409', () => pm.response.to.have.status(409));",
+                  "const body = pm.response.json();",
+                  "pm.test('Error code INVALID_BOOKING_STATUS', () => pm.expect(body.code).to.eql('INVALID_BOOKING_STATUS'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC-04-10 Confirmed seat shows as occupied",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cafeterias/1/seats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cafeterias",
+                "1",
+                "seats"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Seat 2 is occupied', () => pm.expect(body.data.find(s => s.seat_id === 2).status).to.eql('occupied'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC-04-11 Student sees their active booking",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/active?user_id=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "active"
+              ],
+              "query": [
+                {
+                  "key": "user_id",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Active booking is the one we made', () => pm.expect(body.data.booking_id).to.eql(Number(pm.collectionVariables.get('bookingId'))));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC-04-12 Owner cancels the booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/{{bookingId}}/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "{{bookingId}}",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 1\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Booking is cancelled', () => pm.expect(body.data.booking_status).to.eql('cancelled'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC-04-13 Cannot cancel twice",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/{{bookingId}}/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "{{bookingId}}",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 1\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 409', () => pm.response.to.have.status(409));",
+                  "const body = pm.response.json();",
+                  "pm.test('Error code INVALID_BOOKING_STATUS', () => pm.expect(body.code).to.eql('INVALID_BOOKING_STATUS'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC-04-14 No active booking after cancel",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/active?user_id=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "active"
+              ],
+              "query": [
+                {
+                  "key": "user_id",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('No active booking', () => pm.expect(body.data).to.eql(null));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC-04-15 Seat is available again",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cafeterias/1/seats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cafeterias",
+                "1",
+                "seats"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Seat 2 is available', () => pm.expect(body.data.find(s => s.seat_id === 2).status).to.eql('available'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TC-04-16 Unknown booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/999999/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "bookings",
+                "999999",
+                "cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 1\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "const body = pm.response.json();",
+                  "pm.test('Error code BOOKING_NOT_FOUND', () => pm.expect(body.code).to.eql('BOOKING_NOT_FOUND'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

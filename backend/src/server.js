@@ -8,11 +8,17 @@ console.log('DB NAME:', process.env.DB_NAME);
 console.log('DB PASSWORD EXISTS:', !!process.env.DB_PASSWORD);
 
 const db = require('./config/db');
+const seatRoutes = require('./routes/seatRoutes');
+const bookingRoutes = require('./routes/bookingRoutes');
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+// Seat Management (Muhammad Izdihar)
+app.use('/api', seatRoutes);
+app.use('/api/bookings', bookingRoutes);
 
 // untuk test backend
 app.get('/', (req, res) => {
