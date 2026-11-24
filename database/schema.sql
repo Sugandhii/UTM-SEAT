@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS users (
         ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
+
 -- TABLE 2: CAFETERIAS
 
 CREATE TABLE IF NOT EXISTS cafeterias (
@@ -40,6 +41,113 @@ CREATE TABLE IF NOT EXISTS cafeterias (
         ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
+-- TABLE 2.1: CAFETERIA OPERATING HOURS
+-- Default schedule for each cafeteria
+-- 1 = Monday, 2 = Tuesday, ..., 7 = Sunday
+
+CREATE TABLE IF NOT EXISTS cafeteria_operating_hours (
+    operating_hour_id INT AUTO_INCREMENT PRIMARY KEY,
+    cafeteria_id INT NOT NULL,
+    day_of_week TINYINT UNSIGNED NOT NULL,
+
+    open_time TIME DEFAULT NULL,
+    close_time TIME DEFAULT NULL,
+    is_closed BOOLEAN NOT NULL DEFAULT FALSE,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_cafeteria_hours
+        FOREIGN KEY (cafeteria_id)
+        REFERENCES cafeterias(cafeteria_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+
+    UNIQUE (cafeteria_id, day_of_week)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS peak_hour_schedules (
+    peak_hour_id INT AUTO_INCREMENT PRIMARY KEY,
+    cafeteria_id INT NOT NULL,
+
+    day_of_week TINYINT UNSIGNED NOT NULL,
+    period_name VARCHAR(50) NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+
+    description VARCHAR(255) DEFAULT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_peak_hour_cafeteria
+        FOREIGN KEY (cafeteria_id)
+        REFERENCES cafeterias(cafeteria_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+
+    UNIQUE (cafeteria_id, day_of_week, period_name)
+) ENGINE=InnoDB;
+
+-- TABLE: BOOTHS
+
+CREATE TABLE IF NOT EXISTS booths (
+    booth_id INT AUTO_INCREMENT PRIMARY KEY,
+    cafeteria_id INT NOT NULL,
+
+    booth_name VARCHAR(100) NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+
+    status_override ENUM(
+        'open',
+        'closed',
+        'temporarily_closed'
+    ) DEFAULT NULL,
+
+    override_note VARCHAR(255) DEFAULT NULL,
+    override_updated_at TIMESTAMP NULL DEFAULT NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_booth_cafeteria
+        FOREIGN KEY (cafeteria_id)
+        REFERENCES cafeterias(cafeteria_id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+
+    UNIQUE (cafeteria_id, booth_name)
+) ENGINE=InnoDB;
+
+-- TABLE: BOOTH OPERATING HOURS
+-- Individual operating schedule for each booth
+-- 1 = Monday, 2 = Tuesday, ..., 7 = Sunday
+
+CREATE TABLE IF NOT EXISTS booth_operating_hours (
+    operating_hour_id INT AUTO_INCREMENT PRIMARY KEY,
+    booth_id INT NOT NULL,
+    day_of_week TINYINT UNSIGNED NOT NULL,
+
+    open_time TIME DEFAULT NULL,
+    close_time TIME DEFAULT NULL,
+    is_closed BOOLEAN NOT NULL DEFAULT FALSE,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_booth_hours
+        FOREIGN KEY (booth_id)
+        REFERENCES booths(booth_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+
+    UNIQUE (booth_id, day_of_week)
+) ENGINE=InnoDB;
 
 -- TABLE 3: SEATS
 
